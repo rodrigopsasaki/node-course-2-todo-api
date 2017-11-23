@@ -17,7 +17,7 @@ app.post('/todos', (req, res) => {
     .then(todo => {
       res.send(todo);
     }, (err) => {
-      res.status(500).send(err);
+      res.status(400).send(err);
     });
 });
 
@@ -25,3 +25,7 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log('Server listening on port', port);
 });
+
+module.exports = {
+  app,
+};
