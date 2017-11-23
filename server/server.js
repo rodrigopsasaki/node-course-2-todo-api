@@ -21,6 +21,18 @@ app.post('/todos', (req, res) => {
     });
 });
 
+app.get('/todos', (req, res) => {
+
+  Todo.find({})
+    .then(todos => {
+      res.send({ todos });
+    })
+    .catch(err => {
+      res.status(400).send(err);
+    });
+
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log('Server listening on port', port);
