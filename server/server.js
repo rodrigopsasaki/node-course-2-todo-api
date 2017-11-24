@@ -105,6 +105,14 @@ app.patch('/todos/:id', (req, res) => {
 
 });
 
+app.post('/users', (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+
+  new User(body).save()
+    .then(user => res.send(user))
+    .catch(err => res.status(500).send(err));
+});
+
 app.listen(process.env.PORT, () => {
   console.log('Server listening on port', process.env.PORT);
 });
