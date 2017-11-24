@@ -126,6 +126,21 @@ app.get('/users/me', authenticate, (req, res) => {
   return res.send(req.user);
 });
 
+app.post('/users/login', (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password)
+    .then(user => {
+      return user.generateAuthToken()
+        .then(token => {
+          return res.header('x-auth', token).send(user);
+        });
+    })
+    .catch(err => {
+      return res.status(400).send();
+    });
+});
+
 app.listen(process.env.PORT, () => {
   console.log('Server listening on port', process.env.PORT);
 });

@@ -69,7 +69,32 @@ UserSchema.statics = {
     } catch (e) {
       return Promise.reject();
     }
+  },
 
+  findByCredentials(email, password) {
+    const User = this;
+
+    return User.findOne({ email })
+      .then(user => {
+        if (!user) {
+          return Promise.reject();
+        }
+
+        return new Promise((resolve, reject) => {
+          bcrypt.compare(password, user.password, (err, res) => {
+            if (err) {
+              return reject(err);
+            }
+
+            if (res) {
+              return resolve(user);
+            } else {
+              return reject();
+            }
+          });
+        });
+
+      })
   }
 };
 
