@@ -51,6 +51,16 @@ UserSchema.methods = {
     return user.save().then(() => {
       return token;
     });
+  },
+
+  removeToken(token) {
+    const user = this;
+
+    return user.update({
+      $pull: {
+        tokens: { token }
+      }
+    })
   }
 };
 
