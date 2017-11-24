@@ -6,6 +6,7 @@ const { Todo } = require('../models/todo');
 
 const todos = [
   {
+    _id: '5a173790035ed62748d7e257',
     text: 'First test todo'
   },
   {
@@ -84,6 +85,46 @@ describe('GET /todos', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body.todos.length).toBe(2);
+      })
+      .end(done);
+
+  });
+
+});
+
+describe('GET /todos/:id', () => {
+
+  it('should get todo by id', (done) => {
+
+    request(app)
+      .get('/todos/5a173790035ed62748d7e257')
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe('First test todo');
+      })
+      .end(done);
+
+  });
+
+  it('should get 400 on invalid id', (done) => {
+
+    request(app)
+      .get('/todos/some_invalid_id')
+      .expect(400)
+      .expect(res => {
+        expect(res.body.error).toBe('Invalid ID');
+      })
+      .end(done);
+
+  });
+
+  it('should get 404 on id that does not exist', (done) => {
+
+    request(app)
+      .get('/todos/5a173790035ed62748d7e256')
+      .expect(404)
+      .expect(res => {
+        expect(res.body.error).toBe('Todo not found');
       })
       .end(done);
 
