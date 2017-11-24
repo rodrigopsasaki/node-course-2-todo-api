@@ -34,7 +34,7 @@ const UserSchema = new mongoose.Schema({
 
 
 UserSchema.methods = {
-  toJSON () {
+  toJSON() {
     const userObject = this.toObject();
     return _.pick(userObject, ['_id', 'email']);
   },
@@ -48,6 +48,25 @@ UserSchema.methods = {
     return this.save().then(() => {
       return token;
     });
+  }
+};
+
+UserSchema.statics = {
+  findByToken(token) {
+    const User = this;
+
+    try {
+      const decoded = jwt.verify(token, 'abc123');
+
+      return User.findOne({
+        _id: decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+      });
+    } catch (e) {
+      return Promise.reject();
+    }
+
   }
 };
 

@@ -1,12 +1,14 @@
+require('./config/config');
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
-const config = require('./config/config');
 const { mongoose } = require('./db/mongoose');
 const { Todo } = require('./models/todo');
 const { User } = require('./models/user');
+const { authenticate } = require('./middleware/authenticate');
 
 const app = express();
 app.use(bodyParser.json());
@@ -117,6 +119,11 @@ app.post('/users', (req, res) => {
       return res.header('x-auth', token).send(user);
     })
     .catch(err => res.status(500).send(err));
+});
+
+
+app.get('/users/me', authenticate, (req, res) => {
+  return res.send(req.user);
 });
 
 app.listen(process.env.PORT, () => {
