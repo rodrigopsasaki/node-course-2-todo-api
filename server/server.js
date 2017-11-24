@@ -54,6 +54,26 @@ app.get('/todos/:id', (req, res) => {
     });
 });
 
+app.delete('/todos/:id', (req, res) => {
+  const id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(400).send({ error: 'Invalid ID' });
+  }
+
+  Todo.findByIdAndRemove(id)
+    .then(todo => {
+      if (!todo) {
+        return res.status(404).send({ error: 'Todo not found' });
+      }
+
+      return res.status(200).send({ todo });
+    })
+    .catch(err => {
+      return res.status(500).send({ error: 'Internal server error' });
+    });
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log('Server listening on port', port);
