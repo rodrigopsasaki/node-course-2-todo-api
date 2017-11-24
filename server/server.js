@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
@@ -72,6 +73,35 @@ app.delete('/todos/:id', (req, res) => {
     .catch(err => {
       return res.status(500).send({ error: 'Internal server error' });
     });
+});
+
+app.patch('/todos/:id', (req, res) => {
+  const id = req.params.id;
+  const body = _.pick(req.body, ['text', 'completed']);
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(400).send({ error: 'Invalid ID' });
+  }
+
+  if (_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  Todo.findByIdAndUpdate(id, { $set: body }, { new: true })
+    .then(todo => {
+      if (!todo) {
+        return res.status(404).send({ error: 'Todo not found' });
+      }
+
+      return res.send({ todo });
+    })
+    .catch(err => {
+      return res.status(500).send({ error: 'Internal server error' });
+    })
+
 });
 
 const port = process.env.PORT || 3000;
